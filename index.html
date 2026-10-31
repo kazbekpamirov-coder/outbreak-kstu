@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Outbreak at KSTU — a zombie survival game about cybernetics and system thinking. Six rounds, English and Russian.">
+<meta name="description" content="Outbreak at KSTU — a zombie survival game about cybernetics and system thinking. Briefing, six rounds, a boss and two endings — escape or antidote. English and Russian.">
 <meta name="theme-color" content="#0A0D10">
 <meta property="og:title" content="Outbreak at KSTU">
 <meta property="og:description" content="A zombie survival game about cybernetics and system thinking. Can you think like a system?">
@@ -14,8 +14,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;900&family=Golos+Text:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
-[hidden]{display:none!important}
-
 /* Layout: a campus-security console — HUD strip, one live camera feed per round, a decision deck under it. Single dark look on purpose (CCTV + quarantine tape). */
 :root{
   --ink:#0A0D10;
@@ -35,7 +33,7 @@
 html,body{height:100%}
 body{background:var(--ink);color:var(--bone);font-family:var(--font-body);overflow:hidden;margin:0}
 button{font:inherit;color:inherit}
-.app{position:relative;height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;box-sizing:border-box}
+.app{position:relative;height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;box-sizing:border-box}
 
 /* HUD */
 .hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;font:400 12px/1.2 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);min-width:0}
@@ -174,6 +172,52 @@ p{margin:0}
 .score b.ok{color:var(--safe)} .score b.no{color:var(--alarm)}
 .final .actions{grid-column:1/-1}
 
+/* Survival status strip */
+.status{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;font:700 11px/1.2 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);min-width:0}
+.status[hidden]{display:none}
+.bars{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:6px 18px;flex:1 1 520px;min-width:0}
+.bar-item{display:grid;grid-template-columns:auto minmax(30px,1fr) 3ch;align-items:center;gap:8px;min-width:0}
+.bar-item .track{height:8px;background:var(--line);overflow:hidden}
+.bar-item .track i{display:block;height:100%;background:var(--safe);transition:width .5s}
+.bar-item.supplies .track i{background:var(--hazard)}
+.bar-item.morale .track i{background:var(--bone)}
+.bar-item.threat .track i,.bar-item.low .track i{background:var(--alarm)}
+.bar-item b{color:var(--bone);font-variant-numeric:tabular-nums;text-align:right}
+.inv{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.chip{border:1px solid var(--hazard);color:var(--hazard);padding:4px 7px;letter-spacing:.08em}
+.inv .none{color:var(--muted)}
+/* Outcome extras */
+.deltas{display:flex;flex-wrap:wrap;gap:8px}
+.delta{font:700 12px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;padding:8px 10px;border:1px solid currentColor}
+.delta.up{color:var(--safe)} .delta.down{color:var(--alarm)} .delta.item{color:var(--hazard)}
+.lessons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.lessons .debrief{max-width:none}
+.plan{display:grid;gap:12px;background:var(--ink);border:1px solid var(--line);padding:18px 20px}
+.loop{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.loop li{display:grid;align-content:start;gap:6px;border:1px solid var(--line);padding:10px 12px;min-width:0}
+.loop li span{font:700 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--hazard)}
+.loop li b{font:500 clamp(14px,1.25vw,17px)/1.35 var(--font-body)}
+.loop li:nth-child(4){border-color:var(--safe)}
+.loop li:nth-child(4) span{color:var(--safe)}
+.plan .loop-note{font:400 12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+/* Briefing */
+.screen.briefing{align-content:center}
+.briefing .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(16px,3vw,40px);align-items:start}
+.briefing .left{display:grid;gap:18px;min-width:0}
+.briefing h2{font:900 clamp(30px,5vw,72px)/.95 var(--font-display);text-transform:uppercase}
+.mission{display:grid;gap:12px;background:var(--ink);border:1px solid var(--line);padding:18px 20px;min-width:0}
+.mission ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.mission li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:12px;align-items:start;font-size:clamp(15px,1.35vw,18px);line-height:1.4}
+.mission li::before{content:"";width:14px;height:14px;border:2px solid var(--hazard);margin-top:3px}
+.mission li:last-child{color:var(--hazard)}
+.rules{font:400 clamp(13px,1.1vw,15px)/1.6 var(--font-mono);color:var(--muted);letter-spacing:.02em;max-width:70ch}
+.final .debrief{grid-column:1/-1;max-width:none}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 40s linear infinite}
+.bub{animation:bubble 2.4s ease-in infinite}.bub.b2{animation-delay:.8s}.bub.b3{animation-delay:1.6s}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:860px){.lessons,.briefing .cols{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:620px){.bars{grid-template-columns:repeat(2,minmax(0,1fr));flex-basis:100%}}
+
 /* Notes drawer */
 .notes{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:8;max-height:42%;overflow:auto;background:var(--ink);border:1px solid var(--hazard);border-radius:4px;padding:16px 20px;display:grid;gap:8px;box-shadow:0 -10px 40px rgba(0,0,0,.6)}
 .notes[hidden]{display:none}
@@ -239,6 +283,7 @@ p{margin:0}
       <button id="btnFull" type="button"></button>
     </div>
   </header>
+  <section class="status" id="status" aria-label="Survival status" hidden></section>
   <main class="stage" id="stage"></main>
   <aside class="notes" id="notes" hidden><p class="eyebrow" id="notesTitle"></p><p id="notesText"></p></aside>
   <canvas class="grain" id="grain" aria-hidden="true"></canvas>
@@ -254,7 +299,7 @@ en:{
   broadcast:"Emergency broadcast · Campus alert level 4 · Stay indoors · Do not eat the shawarma · Emergency broadcast · Campus alert level 4",
   titleA:"Outbreak at", titleB:"KSTU",
   sub:"A survival game about cybernetics and system thinking",
-  story:"Ten minutes ago, in the main building, a student ate a suspicious shawarma and turned into a zombie. The outbreak is out of control. You are the leaders of the survivors. Six decisions will decide whether our group makes it to graduation.",
+  story:"Ten minutes ago, in the main building, a student ate a suspicious shawarma and turned into a zombie. The outbreak is out of control. You are the leaders of the survivors. Six rounds and one last decision will show whether we escape the city — or save humanity.",
   start:"Start survival",
   hint:"A / B choose · V vote timer · N speaker notes · M sound · F full screen · 1–6 jump to a round",
   live:"Live", vote:"Vote 15 s", timeUp:"Decide!",
@@ -272,38 +317,49 @@ en:{
   map:{main:"MAIN",canteen:"CANTEEN",lib:"LIBRARY",dorm:"DORM 3",report:"REPORT · 10 MIN OLD",now:"NOW?",us:"US"},
   sign:"EXIT FROM THE ACADEMY",
   osdLatency:"Latency 10 min", osdNoise:"Noise 92 dB",
+  stat:{"health": "Health", "supplies": "Supplies", "morale": "Morale", "threat": "Threat"},
+  inv:"Inventory",
+  items:{"key": "Classroom key", "sample": "Green sample", "food": "Canteen supplies", "map": "Campus map", "gen": "Silent generator", "pass": "Exit pass"},
+  planTitle:"Our system plan",
+  planLbl:["Sensor", "Goal", "Action", "Feedback"],
+  planLoop:"Feedback goes back to the sensor — and the loop starts again.",
+  brief:{"eyebrow": "Briefing · 14:35 · Main building", "title": "You are the survivors", "text": "Patient zero ate a shawarma at 14:25. Ten minutes later half of the main building is infected. Everyone in this room is a survivor, and you are the leaders. You vote — we act.", "objTitle": "Mission", "obj": ["Get out of the infected main building", "Find a weapon against the virus", "Hold a safe base through the night", "Get past whatever guards the exit", "Escape the city — or make the antidote"], "rules": "Each round: we describe the problem, you vote A or B, then we show the system plan — what cybernetics and system thinking say about it. Watch the status bar: health, supplies, morale and threat change with every decision.", "begin": "Begin round 1"},
+  epi:{"eyebrow": "Epilogue · Day 2 · 07:00", "title": "The last decision", "cam": "CAM 01 · Exit · Dean's wing", "text": "The exit is open. Behind you is lab 214 with the professor's notes on the antidote. Ahead is the road out of the city. There is time for only one of them.", "a": "Escape: lead the survivors out of the city before the horde returns.", "b": "Antidote: go back to lab 214 and finish the professor's work.", "la": "A · ESCAPE", "lb": "B · ANTIDOTE"},
+  endings:{"escape": {"eyebrow": "Day 2 · Sunrise · City limits", "title": "We escaped", "text": "At sunrise the survivors walk out of the city. Nobody is left behind.", "concept": "How system thinking got us out", "expl": "We broke loops instead of feeding them, tested what we could not see, kept our base open but controlled, planned around delays and changed structures instead of numbers. The same laws work in any crisis."}, "antidote": {"eyebrow": "Day 3 · Lab 214", "title": "Humanity saved", "textSample": "With the green sample the lab made the antidote in seven tries: test, measure, adjust, repeat. By evening the first patients turn human again.", "textNoSample": "We had no sample, so we started from zero: forty tests instead of seven. Slow — but the feedback loop got us there. By night the first patients turn human again.", "concept": "An antidote is a feedback loop", "expl": "Every test is an input, every reaction is an output, and every adjustment moves us closer to the goal. That is cybernetics in its purest form — real medicines are also made through cycles of testing and adjustment."}},
+  loopWords:["TEST", "MEASURE", "ADJUST"],
+  camLab:"CAM 11 · Lab 214 · Day 3",
   rounds:[
-    {label:"Round 1 of 6", log:["14:25 · Patient zero: student, shawarma stall, main building","14:31 · Main exit blocked","14:34 · Crowd of 40+ running back along the corridor"], cam:"CAM 03 · Main building · 2nd floor", title:"Panic in the corridors",
+    {label:"Round 1 of 6", plan:["We hear where the crowd is running", "Everyone alive and calm", "Lock the door, stay quiet", "Head count every minute"], log:["14:25 · Patient zero: student, shawarma stall, main building","14:31 · Main exit blocked","14:34 · Crowd of 40+ running back along the corridor"], cam:"CAM 03 · Main building · 2nd floor", title:"Panic in the corridors",
      problem:"The main exit is blocked by zombies. A screaming crowd is running back down the corridor, knocking over everything in its way. You have seconds.",
      a:"Run with the whole crowd to the emergency exit.",
      b:"Jump into the nearest empty classroom and lock the door.",
      good:{title:"Door locked",text:"The crowd thunders past the door. Inside the classroom it is quiet. Everyone is alive.",concept:"Breaking the loop",expl:"You stepped out of the reinforcing loop of panic and built a small stable system with clear boundaries. Inside it you control the situation again — that is how homeostasis starts."},
      bad:{title:"Stampede",text:"The crowd jammed the emergency exit. Six people were knocked down, and the zombies caught up.",concept:"Reinforcing loop",expl:"Panic feeds itself: fear makes people run, and running spreads more fear. By joining the crowd you added energy to a loop that nobody controlled."}},
-    {label:"Round 2 of 6", log:["14:39 · Survivors barricaded in lab 214","14:40 · Door integrity: 40%","14:41 · Three unlabeled samples found"], cam:"CAM 11 · Chemistry lab 214", title:"The siege and the black box",
+    {label:"Round 2 of 6", plan:["The zombie hand in the broken door", "Find what hurts the zombies", "One drop of green", "Watch the reaction, then repeat"], log:["14:39 · Survivors barricaded in lab 214","14:40 · Door integrity: 40%","14:41 · Three unlabeled samples found"], cam:"CAM 11 · Chemistry lab 214", title:"The siege and the black box",
      problem:"You are barricaded in the chemistry lab, and the door shakes under the blows. On the table are three unlabeled test tubes — red, blue and green — left by a professor who tried to make an antidote. There is no time to analyse them.",
      a:"Test it: put one drop of green on the zombie hand pushing through the door, and watch what happens.",
      b:"Mix the red and the blue at random and pour it under the door.",
      good:{title:"Weak spot found",text:"A hiss. The zombie howls and pulls its hand back. The green liquid is our weapon.",concept:"Black box",expl:"You did not study the virus inside the zombie. You gave the system an input — one drop — and watched the output. Cybernetics lets you control a system even when you cannot see inside it."},
      bad:{title:"Boom",text:"The mix was flammable. The lab went up in flames, and five survivors did not make it out.",concept:"Guessing without feedback",expl:"You acted on a hunch with nothing coming back to tell you if it worked. Without feedback there is no control — only luck."}},
-    {label:"Round 3 of 6", log:["14:58 · Group sheltering in the canteen","15:20 · CO₂ level rising","15:22 · Scratching in the ventilation shaft"], cam:"CAM 07 · Canteen · Ground floor", title:"The canteen: open or closed?",
+    {label:"Round 3 of 6", plan:["CO₂ level and scratching in the vent", "Breathable air, no bites", "Open the vent behind a grille", "A guard checks it every 10 minutes"], log:["14:58 · Group sheltering in the canteen","15:20 · CO₂ level rising","15:22 · Scratching in the ventilation shaft"], cam:"CAM 07 · Canteen · Ground floor", title:"The canteen: open or closed?",
      problem:"The group is locked in the canteen. There is food, but with every door and window shut the air is getting heavy. The only ventilation shaft leads outside — and something is scratching inside it. Zombie rats.",
      a:"Seal everything: barricade the shaft too. Nothing gets in, nothing gets out.",
      b:"Open the shaft, but put a grille and a guard on it, and check it every ten minutes.",
      good:{title:"Breathing again",text:"Fresh air comes in. Twice the guard hears scratching and slams the grille shut. Nobody faints, nobody gets bitten.",concept:"Open systems",expl:"Ludwig von Bertalanffy showed that living systems are open: they survive only by exchanging matter and energy with their environment. The trick is controlled openness — a boundary with a sensor and a gate."},
      bad:{title:"No air",text:"The canteen became a sealed box. After an hour people started fainting, and in the panic four survivors ran outside.",concept:"Closed system",expl:"A system cut off from its environment does not become safer — it runs down. Total isolation is a linear fix that kills the system it is meant to protect."}},
-    {label:"Round 4 of 6", log:["15:31 · Relay latency: 10 min","15:33 · Report: horde at the library (data from 15:23)","15:34 · Target: dormitory 3"], cam:"CAM 22 · Rooftop · Radio relay", title:"The delayed radio",
+    {label:"Round 4 of 6", plan:["Scout reports, 10 minutes late", "Reach dorm 3 unseen", "Go where the horde will NOT be", "Correct the route after each report"], log:["15:31 · Relay latency: 10 min","15:33 · Report: horde at the library (data from 15:23)","15:34 · Target: dormitory 3"], cam:"CAM 22 · Rooftop · Radio relay", title:"The delayed radio",
      problem:"Our scouts report where the horde is, but the radio relay is slow: every report reaches us ten minutes late. The horde never stops moving. We must lead the group to dormitory 3.",
      a:"Plan with the delay: take the horde's direction and speed, and lead the group to where the horde will not be in ten minutes.",
      b:"Run away from the horde the moment each new report arrives.",
      good:{title:"Clean crossing",text:"The group slips past the tail of the horde and reaches the dormitory without a single fight.",concept:"Feedback delays",expl:"Every feedback loop has a delay. If you react to old information as if it were new, you overshoot — like a shower that is first freezing, then boiling. A good controller predicts where the system will be, not where it was."},
      bad:{title:"Into the horde",text:"Each time we ran from where the horde had been, we ran into where it actually was. Four survivors were lost.",concept:"Overshoot",expl:"Reacting at full speed to delayed feedback makes a system swing back and forth. Late information has to be corrected for time."}},
-    {label:"Round 5 of 6", log:["21:10 · Attack #3 at the north wall","21:12 · Generator noise: 92 dB","21:15 · Ammo left: 18%"], cam:"CAM 31 · Dormitory 3 · Courtyard", title:"Night attacks",
+    {label:"Round 5 of 6", plan:["Where and when the attacks happen", "Quiet nights", "Move the generator to the basement", "Count the attacks every night"], log:["21:10 · Attack #3 at the north wall","21:12 · Generator noise: 92 dB","21:15 · Ammo left: 18%"], cam:"CAM 31 · Dormitory 3 · Courtyard", title:"Night attacks",
      problem:"We hold the dormitory, but every night the zombies come back to the same wall. The fighters are exhausted and ammo is running low. What do we change?",
      a:"Build the wall higher and spend everything we have on ammo.",
      b:"Find out why they come: our generator roars all night. Move it to the basement and wrap it in mattresses.",
      good:{title:"Silent night",text:"With the generator in the basement, the courtyard goes quiet. That night not a single zombie comes to the wall.",concept:"Leverage points",expl:"Donella Meadows showed that changing numbers — more walls, more bullets — is the weakest way to change a system. Changing its structure, the thing that creates the behavior, is far stronger."},
      bad:{title:"Same night, again",text:"The wall is higher, but the noise is still there. The horde keeps coming, and every night costs more. Four survivors were lost.",concept:"Fixes that fail",expl:"We treated the symptom and fed the cause: the noise kept attracting zombies, and the shooting made even more noise."}},
-    {label:"Final round · 6 of 6", log:["06:40 · Exit route found: dean's wing","06:41 · Unknown hostile: Professor Z","06:42 · Standard attacks: 0 of 5 successful"], cam:"CAM 01 · Dean's wing · Department office", title:"Boss fight: Professor Z",
+    {label:"Final round · 6 of 6", plan:["How Professor Z reacts", "Open the exit", "Three attacks at once: light, sound, chair", "Switch tactics when he adapts"], log:["06:40 · Exit route found: dean's wing","06:41 · Unknown hostile: Professor Z","06:42 · Standard attacks: 0 of 5 successful"], cam:"CAM 01 · Dean's wing · Department office", title:"Boss fight: Professor Z",
      problem:"Between you and the door marked EXIT FROM THE ACADEMY stands Professor Z: huge, fast and frighteningly smart. He predicts every standard attack — he knows physics and anatomy better than anyone.",
      a:"Build a combo team: the hacker blinds him with the projector, the top student shouts formulas at him, and the group leader hits him with a chair from behind.",
      b:"Send our strongest guy at him with a mop.",
@@ -311,20 +367,24 @@ en:{
      bad:{title:"Retake",text:"Professor Z calculated the mop's trajectory, caught it and sent our athlete to a retake — in the zombie ranks.",concept:"Too little variety",expl:"One simple, linear action against a complex system is easy to predict and easy to absorb."}}
   ],
   notesText:{
-    start:"Hi everyone. There will be no lecture today. Imagine that ten minutes ago, in the main building, a student ate a suspicious shawarma and turned into a zombie. The outbreak is out of control. You are the leaders of the survivors, and your decisions decide whether our group makes it to graduation. Let's go! → Click “Start survival”.",
-    r0:"Round one. The main exit is blocked, and a panicking crowd is running back towards us. A — run with the crowd to the emergency exit. B — hide in the nearest classroom and lock the door. Raise your hands! → Press V for a 15-second vote, count the hands, then click the option the room chose.",
-    o0:"Panic is a reinforcing loop: fear makes people run, and running spreads more fear. Option B breaks that loop. We build a small, stable system with clear boundaries, and inside it we control the situation again.",
-    r1:"Round two. We are barricaded in the chemistry lab, the door is about to give way, and there are three unknown liquids on the table. A — test one drop of the green liquid on the zombie's hand. B — mix red and blue at random and pour it under the door. Vote!",
-    o1:"This is the black box method. We have no time to study the virus inside the zombie, so we give an input — one drop — and watch the output — the reaction. Cybernetics teaches us to control a system even when we cannot see inside it.",
-    r2:"Round three. We are in the canteen, the air is running out, and the only vent leads outside — with zombie rats inside it. A — seal everything, including the vent. B — open the vent, but with a grille and a guard who checks it. Vote!",
-    o2:"This is Bertalanffy's idea: living systems are open systems. A system that cuts itself off from its environment runs down. What keeps us alive is controlled openness — a boundary with a sensor and a gate.",
-    r3:"Round four. Our scouts report the horde's position, but every message is ten minutes late. A — plan with the delay and go where the horde will not be. B — run the moment each report arrives. What do you choose?",
-    o3:"Every feedback loop has a delay. Reacting to old information as if it were new makes the system overshoot, like a shower that is first freezing and then boiling. A good controller predicts where the system will be, not where it was.",
-    r4:"Round five. Every night the zombies come back to the same wall. A — build the wall higher and buy more ammo. B — find the cause: our noisy generator — and move it to the basement. Vote!",
-    o4:"These are Donella Meadows' leverage points. Changing numbers — walls, bullets — is the weakest lever. Changing the structure that creates the problem is much stronger. Shooting at the symptom only made more noise: a classic “fix that fails”.",
-    r5:"The final boss: Professor Z. He predicts every standard attack. A — a combo team: the hacker with the projector, the top student with formulas and the group leader with a chair. B — send our strongest guy with a mop. Most people want force. Think like a system!",
-    o5:"This is Ashby's law of requisite variety: only variety can destroy variety. One strong attack is simple and predictable. Three different people with three different tools create more variety than the boss can handle.",
-    final:"Congratulations, we survived! But the most important thing is this: the laws that saved us today — feedback loops, the black box, open systems, delays, leverage points and requisite variety — work without zombies too. They drive the economy, your career, YouTube's algorithms and even your relationships. Whoever sees the world as a system of connections controls chaos instead of obeying it. Thanks for playing!"
+    start:"Speaker: Hi everyone. There will be no lecture today. Imagine that ten minutes ago, in the main building, a student ate a suspicious shawarma and turned into a zombie. The outbreak is out of control. You are the leaders of the survivors, and your decisions decide whether our group makes it to graduation. Let's go! → Click “Start survival”.",
+    r0:"Speaker: Round one. The main exit is blocked, and a panicking crowd is running back towards us. A — run with the crowd to the emergency exit. B — hide in the nearest classroom and lock the door. Raise your hands! → Press V for a 15-second vote, count the hands, then click the option the room chose.",
+    o0:"Speaker (point at the system plan): Panic is a reinforcing loop: fear makes people run, and running spreads more fear. Option B breaks that loop. We build a small, stable system with clear boundaries, and inside it we control the situation again.",
+    r1:"Speaker: Round two. We are barricaded in the chemistry lab, the door is about to give way, and there are three unknown liquids on the table. A — test one drop of the green liquid on the zombie's hand. B — mix red and blue at random and pour it under the door. Vote!",
+    o1:"Speaker (point at the system plan): This is the black box method. We have no time to study the virus inside the zombie, so we give an input — one drop — and watch the output — the reaction. Cybernetics teaches us to control a system even when we cannot see inside it.",
+    r2:"Speaker: Round three. We are in the canteen, the air is running out, and the only vent leads outside — with zombie rats inside it. A — seal everything, including the vent. B — open the vent, but with a grille and a guard who checks it. Vote!",
+    o2:"Speaker (point at the system plan): This is Bertalanffy's idea: living systems are open systems. A system that cuts itself off from its environment runs down. What keeps us alive is controlled openness — a boundary with a sensor and a gate.",
+    r3:"Speaker: Round four. Our scouts report the horde's position, but every message is ten minutes late. A — plan with the delay and go where the horde will not be. B — run the moment each report arrives. What do you choose?",
+    o3:"Speaker (point at the system plan): Every feedback loop has a delay. Reacting to old information as if it were new makes the system overshoot, like a shower that is first freezing and then boiling. A good controller predicts where the system will be, not where it was.",
+    r4:"Speaker: Round five. Every night the zombies come back to the same wall. A — build the wall higher and buy more ammo. B — find the cause: our noisy generator — and move it to the basement. Vote!",
+    o4:"Speaker (point at the system plan): These are Donella Meadows' leverage points. Changing numbers — walls, bullets — is the weakest lever. Changing the structure that creates the problem is much stronger. Shooting at the symptom only made more noise: a classic “fix that fails”.",
+    r5:"Speaker: The final boss: Professor Z. He predicts every standard attack. A — a combo team: the hacker with the projector, the top student with formulas and the group leader with a chair. B — send our strongest guy with a mop. Most people want force. Think like a system!",
+    o5:"Speaker (point at the system plan): This is Ashby's law of requisite variety: only variety can destroy variety. One strong attack is simple and predictable. Three different people with three different tools create more variety than the boss can handle.",
+    final:"Congratulations, we survived! But the most important thing is this: the laws that saved us today — feedback loops, the black box, open systems, delays, leverage points and requisite variety — work without zombies too. They drive the economy, your career, YouTube's algorithms and even your relationships. Whoever sees the world as a system of connections controls chaos instead of obeying it. Thanks for playing!",
+    brief:"Speaker: Everyone in this room is now a survivor — and you are the leaders. The rules are simple: we describe a problem, you vote A or B, and then we show the system plan — how cybernetics and system thinking solve it. Keep an eye on the status bar: health, supplies, morale and threat change with every decision. → Click “Begin round 1”.",
+    epi:"Speaker: The exit is open, but there is time for only one thing. A — escape the city with everyone. B — go back to lab 214 and make the antidote to save humanity. This is the last vote — make it count!",
+    endA:"Speaker: We escaped! Look at how we did it: we broke the loop of panic, tested what we could not see, kept our base open but under control, planned around delays, changed structures instead of numbers and beat the boss with variety. These laws work without zombies too — in the economy, your career, YouTube's algorithms and even your relationships. Whoever sees the world as a system controls chaos instead of obeying it. Thanks for playing!",
+    endB:"Speaker: Humanity is saved! An antidote is the perfect feedback loop: test, measure, adjust, repeat — until the system reaches its goal. And all the laws that brought us here work without zombies too — in the economy, your career, YouTube's algorithms and even your relationships. Whoever sees the world as a system controls chaos instead of obeying it. Thanks for playing!"
   }
 },
 ru:{
@@ -333,7 +393,7 @@ ru:{
   broadcast:"Экстренное оповещение · Уровень тревоги 4 · Оставайтесь в зданиях · Не ешьте шаурму · Экстренное оповещение · Уровень тревоги 4",
   titleA:"Вспышка в", titleB:"КГТУ",
   sub:"Игра на выживание о кибернетике и системном мышлении",
-  story:"Десять минут назад в главном корпусе студент съел подозрительную шаурму и превратился в зомби. Эпидемия вышла из-под контроля. Вы — лидеры выживших. Шесть решений определят, доживёт ли наша группа до диплома.",
+  story:"Десять минут назад в главном корпусе студент съел подозрительную шаурму и превратился в зомби. Эпидемия вышла из-под контроля. Вы — лидеры выживших. Шесть раундов и одно последнее решение покажут, сбежим ли мы из города — или спасём человечество.",
   start:"Начать выживание",
   hint:"A / B — выбор · V — таймер · N — подсказки · M — звук · F — полный экран · 1–6 — перейти к раунду",
   live:"Эфир", vote:"Голосуем 15 с", timeUp:"Решайте!",
@@ -351,38 +411,49 @@ ru:{
   map:{main:"ГЛАВНЫЙ",canteen:"СТОЛОВАЯ",lib:"БИБЛИОТЕКА",dorm:"ОБЩЕЖИТИЕ 3",report:"ДАННЫЕ · 10 МИН НАЗАД",now:"СЕЙЧАС?",us:"МЫ"},
   sign:"ВЫХОД ИЗ АКАДЕМИИ",
   osdLatency:"Задержка 10 мин", osdNoise:"Шум 92 дБ",
+  stat:{"health": "Здоровье", "supplies": "Припасы", "morale": "Дух", "threat": "Угроза"},
+  inv:"Инвентарь",
+  items:{"key": "Ключ от аудитории", "sample": "Зелёный образец", "food": "Запасы столовой", "map": "Карта кампуса", "gen": "Тихий генератор", "pass": "Пропуск к выходу"},
+  planTitle:"Наш системный план",
+  planLbl:["Датчик", "Цель", "Действие", "Обратная связь"],
+  planLoop:"Обратная связь возвращается к датчику — и петля начинается снова.",
+  brief:{"eyebrow": "Брифинг · 14:35 · Главный корпус", "title": "Вы — выжившие", "text": "Нулевой пациент съел шаурму в 14:25. Через десять минут заражена половина главного корпуса. Все в этом зале — выжившие, а вы — их лидеры. Вы голосуете — мы действуем.", "objTitle": "Задание", "obj": ["Выбраться из заражённого главного корпуса", "Найти оружие против вируса", "Удержать безопасную базу до утра", "Пройти того, кто охраняет выход", "Сбежать из города — или создать антидот"], "rules": "Каждый раунд: мы описываем проблему, вы голосуете A или B, а потом мы показываем системный план — что говорят кибернетика и системное мышление. Следите за панелью сверху: здоровье, припасы, дух и угроза меняются после каждого решения.", "begin": "Начать раунд 1"},
+  epi:{"eyebrow": "Эпилог · День 2 · 07:00", "title": "Последнее решение", "cam": "CAM 01 · Выход · Крыло деканата", "text": "Выход открыт. Позади — кабинет 214 с записями профессора об антидоте. Впереди — дорога из города. Времени хватит только на одно.", "a": "Сбежать: вывести выживших из города, пока орда не вернулась.", "b": "Антидот: вернуться в кабинет 214 и закончить работу профессора.", "la": "A · ПОБЕГ", "lb": "B · АНТИДОТ"},
+  endings:{"escape": {"eyebrow": "День 2 · Рассвет · Граница города", "title": "Мы сбежали", "text": "На рассвете выжившие выходят из города. Никто не остался позади.", "concept": "Как системное мышление нас вывело", "expl": "Мы разрывали петли, а не подпитывали их, проверяли то, что не видно изнутри, держали базу открытой, но под контролем, учитывали задержки и меняли структуру, а не числа. Те же законы работают в любом кризисе."}, "antidote": {"eyebrow": "День 3 · Кабинет 214", "title": "Человечество спасено", "textSample": "С зелёным образцом лаборатория создала антидот за семь попыток: проверка, измерение, поправка, повтор. К вечеру первые заражённые снова становятся людьми.", "textNoSample": "Образца у нас не было, поэтому мы начали с нуля: сорок проверок вместо семи. Медленно — но петля обратной связи привела нас к цели. К ночи первые заражённые снова становятся людьми.", "concept": "Антидот — это петля обратной связи", "expl": "Каждая проверка — это вход, каждая реакция — выход, а каждая поправка приближает нас к цели. Это кибернетика в чистом виде — и настоящие лекарства тоже создаются циклами проверок и поправок."}},
+  loopWords:["ПРОВЕРКА", "ИЗМЕРЕНИЕ", "ПОПРАВКА"],
+  camLab:"CAM 11 · Кабинет 214 · День 3",
   rounds:[
-    {label:"Раунд 1 из 6", log:["14:25 · Нулевой пациент: студент, ларёк с шаурмой, главный корпус","14:31 · Главный выход перекрыт","14:34 · Толпа 40+ человек бежит обратно по коридору"], cam:"CAM 03 · Главный корпус · 2 этаж", title:"Паника в коридорах",
+    {label:"Раунд 1 из 6", plan:["Слушаем, куда бежит толпа", "Все живы и спокойны", "Запереть дверь и не шуметь", "Пересчёт людей каждую минуту"], log:["14:25 · Нулевой пациент: студент, ларёк с шаурмой, главный корпус","14:31 · Главный выход перекрыт","14:34 · Толпа 40+ человек бежит обратно по коридору"], cam:"CAM 03 · Главный корпус · 2 этаж", title:"Паника в коридорах",
      problem:"Главный выход перекрыт зомби. Кричащая толпа несётся обратно по коридору и сбивает всё на своём пути. У вас секунды.",
      a:"Бежать вместе со всей толпой к запасному выходу.",
      b:"Заскочить в ближайшую пустую аудиторию и запереть дверь.",
      good:{title:"Дверь заперта",text:"Толпа с грохотом проносится мимо двери. В аудитории тихо. Все живы.",concept:"Разрыв петли",expl:"Вы вышли из усиливающей петли паники и создали маленькую устойчивую систему с чёткими границами. Внутри неё вы снова управляете ситуацией — так начинается гомеостаз."},
      bad:{title:"Давка",text:"Толпа застряла у запасного выхода. Шестерых сбили с ног, и зомби их догнали.",concept:"Усиливающая петля",expl:"Паника питает сама себя: страх заставляет бежать, а бег разгоняет ещё больше страха. Присоединившись к толпе, вы добавили энергии в петлю, которой никто не управлял."}},
-    {label:"Раунд 2 из 6", log:["14:39 · Выжившие забаррикадировались в каб. 214","14:40 · Целостность двери: 40%","14:41 · Найдены три пробирки без подписи"], cam:"CAM 11 · Кабинет химии 214", title:"Осада и чёрный ящик",
+    {label:"Раунд 2 из 6", plan:["Рука зомби в проломе двери", "Найти, что вредит зомби", "Одна капля зелёной жидкости", "Смотрим на реакцию и повторяем"], log:["14:39 · Выжившие забаррикадировались в каб. 214","14:40 · Целостность двери: 40%","14:41 · Найдены три пробирки без подписи"], cam:"CAM 11 · Кабинет химии 214", title:"Осада и чёрный ящик",
      problem:"Вы забаррикадировались в кабинете химии, дверь содрогается от ударов. На столе три пробирки без подписи — красная, синяя и зелёная. Их оставил профессор, который пытался сделать антидот. Времени на анализ нет.",
      a:"Проверить: капнуть каплю зелёной жидкости на руку зомби, которая лезет в пролом двери, и посмотреть, что будет.",
      b:"Смешать наугад красную и синюю и вылить под дверь.",
      good:{title:"Слабое место найдено",text:"Шипение. Зомби взвыл и отдёрнул руку. Зелёная жидкость — наше оружие.",concept:"Чёрный ящик",expl:"Вы не изучали вирус внутри зомби. Вы подали на вход сигнал — одну каплю — и посмотрели на выход. Кибернетика позволяет управлять системой, даже если не видно, что у неё внутри."},
      bad:{title:"Бум",text:"Смесь оказалась горючей. Кабинет вспыхнул, и пятеро выживших не успели выбраться.",concept:"Наугад, без обратной связи",expl:"Вы действовали «на авось», и ничто не сообщало, сработало ли решение. Без обратной связи нет управления — есть только удача."}},
-    {label:"Раунд 3 из 6", log:["14:58 · Группа укрылась в столовой","15:20 · Уровень CO₂ растёт","15:22 · Скрежет в вентиляционной шахте"], cam:"CAM 07 · Столовая · 1 этаж", title:"Столовая: открыто или закрыто?",
+    {label:"Раунд 3 из 6", plan:["Уровень CO₂ и скрежет в шахте", "Дышать и не быть укушенными", "Открыть шахту за решёткой", "Дежурный проверяет каждые 10 минут"], log:["14:58 · Группа укрылась в столовой","15:20 · Уровень CO₂ растёт","15:22 · Скрежет в вентиляционной шахте"], cam:"CAM 07 · Столовая · 1 этаж", title:"Столовая: открыто или закрыто?",
      problem:"Группа заперлась в столовой. Еда есть, но все двери и окна закрыты, и воздух становится тяжёлым. Единственная вентиляционная шахта ведёт наружу — и в ней кто-то скребётся. Зомби-крысы.",
      a:"Закрыть всё: забаррикадировать и шахту. Ничего не войдёт и не выйдет.",
      b:"Открыть шахту, но поставить решётку и дежурного, который проверяет её каждые десять минут.",
      good:{title:"Снова дышим",text:"Свежий воздух идёт внутрь. Дважды дежурный слышит скрежет и захлопывает решётку. Никто не теряет сознание, никого не кусают.",concept:"Открытые системы",expl:"Людвиг фон Берталанфи показал, что живые системы открыты: они выживают только за счёт обмена веществом и энергией со средой. Секрет — в управляемой открытости: граница с датчиком и воротами."},
      bad:{title:"Нечем дышать",text:"Столовая превратилась в закрытую коробку. Через час люди начали терять сознание, и в панике четверо выбежали наружу.",concept:"Закрытая система",expl:"Система, отрезанная от среды, не становится безопаснее — она угасает. Полная изоляция — это линейное решение, которое убивает ту систему, которую должно защищать."}},
-    {label:"Раунд 4 из 6", log:["15:31 · Задержка ретранслятора: 10 мин","15:33 · Сообщение: орда у библиотеки (данные на 15:23)","15:34 · Цель: общежитие №3"], cam:"CAM 22 · Крыша · Радиоретранслятор", title:"Радио с опозданием",
+    {label:"Раунд 4 из 6", plan:["Сообщения разведки с опозданием 10 минут", "Дойти до общежития незамеченными", "Идти туда, где орды НЕ будет", "Поправлять маршрут после каждого сообщения"], log:["15:31 · Задержка ретранслятора: 10 мин","15:33 · Сообщение: орда у библиотеки (данные на 15:23)","15:34 · Цель: общежитие №3"], cam:"CAM 22 · Крыша · Радиоретранслятор", title:"Радио с опозданием",
      problem:"Разведчики сообщают, где орда, но ретранслятор медленный: каждое сообщение доходит до нас с опозданием на десять минут. Орда всё время движется. Нам нужно довести группу до общежития №3.",
      a:"Учесть задержку: взять направление и скорость орды и вести группу туда, где орды не будет через десять минут.",
      b:"Убегать от орды сразу, как только приходит очередное сообщение.",
      good:{title:"Чистый переход",text:"Группа проскальзывает за хвостом орды и добирается до общежития без единой стычки.",concept:"Задержки в обратной связи",expl:"В каждой петле обратной связи есть задержка. Если реагировать на старую информацию как на свежую, получится перерегулирование — как душ, который то ледяной, то кипяток. Хороший регулятор предсказывает, где система будет, а не где она была."},
      bad:{title:"Прямо в орду",text:"Каждый раз мы убегали оттуда, где орда была, — прямо туда, где она находилась на самом деле. Мы потеряли четверых.",concept:"Перерегулирование",expl:"Резкая реакция на запоздавшую обратную связь раскачивает систему туда-сюда. Опоздавшую информацию нужно поправлять на время."}},
-    {label:"Раунд 5 из 6", log:["21:10 · Атака №3 у северной стены","21:12 · Шум генератора: 92 дБ","21:15 · Патронов осталось: 18%"], cam:"CAM 31 · Общежитие №3 · Двор", title:"Ночные атаки",
+    {label:"Раунд 5 из 6", plan:["Где и когда идут атаки", "Тихие ночи", "Перенести генератор в подвал", "Считать атаки каждую ночь"], log:["21:10 · Атака №3 у северной стены","21:12 · Шум генератора: 92 дБ","21:15 · Патронов осталось: 18%"], cam:"CAM 31 · Общежитие №3 · Двор", title:"Ночные атаки",
      problem:"Мы удерживаем общежитие, но каждую ночь зомби возвращаются к одной и той же стене. Бойцы вымотаны, патроны заканчиваются. Что меняем?",
      a:"Построить стену выше и потратить всё, что есть, на патроны.",
      b:"Выяснить, почему они приходят: наш генератор ревёт всю ночь. Перенести его в подвал и обложить матрасами.",
      good:{title:"Тихая ночь",text:"Генератор в подвале, во дворе тишина. В эту ночь к стене не пришёл ни один зомби.",concept:"Точки воздействия",expl:"Донелла Медоуз показала, что менять числа — больше стен, больше патронов — самый слабый способ изменить систему. Гораздо сильнее изменить её структуру — то, что порождает поведение."},
      bad:{title:"Та же ночь, снова",text:"Стена выше, но шум никуда не делся. Орда приходит снова, и каждая ночь обходится дороже. Мы потеряли четверых.",concept:"Решения, которые не работают",expl:"Мы лечили симптом и подпитывали причину: шум продолжал привлекать зомби, а стрельба добавляла ещё больше шума."}},
-    {label:"Финальный раунд · 6 из 6", log:["06:40 · Найден путь к выходу: крыло деканата","06:41 · Неизвестная угроза: Профессор Z","06:42 · Стандартные атаки: 0 из 5 успешны"], cam:"CAM 01 · Крыло деканата · Кафедра", title:"Босс: Профессор Z",
+    {label:"Финальный раунд · 6 из 6", plan:["Как реагирует Профессор Z", "Открыть выход", "Три атаки сразу: свет, звук, стул", "Менять тактику, когда он подстраивается"], log:["06:40 · Найден путь к выходу: крыло деканата","06:41 · Неизвестная угроза: Профессор Z","06:42 · Стандартные атаки: 0 из 5 успешны"], cam:"CAM 01 · Крыло деканата · Кафедра", title:"Босс: Профессор Z",
      problem:"Между вами и дверью с табличкой «ВЫХОД ИЗ АКАДЕМИИ» стоит Профессор Z: огромный, быстрый и пугающе умный. Он просчитывает любую стандартную атаку — физику и анатомию он знает лучше всех.",
      a:"Собрать комбо-команду: хакер ослепляет его проектором, отличница выкрикивает формулы, а староста бьёт стулом сзади.",
      b:"Отправить на него самого сильного парня со шваброй наперевес.",
@@ -390,20 +461,24 @@ ru:{
      bad:{title:"Пересдача",text:"Профессор Z просчитал траекторию швабры, перехватил её и отправил нашего качка на пересдачу — в ряды зомби.",concept:"Мало разнообразия",expl:"Одно простое линейное действие против сложной системы легко предсказать и легко поглотить."}}
   ],
   notesText:{
-    start:"Привет, ребята. Сегодня лекции не будет. Представьте, что десять минут назад в главном корпусе студент съел подозрительную шаурму и превратился в зомби. Эпидемия вышла из-под контроля. Вы — лидеры выживших, и от ваших решений зависит, доживёт ли наша группа до диплома. Погнали! → Нажмите «Начать выживание».",
-    r0:"Раунд первый. Главный выход перекрыт, на нас несётся толпа в панике. A — бежать вместе с толпой к запасному выходу. B — спрятаться в ближайшей аудитории и запереть дверь. Поднимайте руки! → Нажмите V — 15 секунд на голосование, посчитайте руки и кликните выбор зала.",
-    o0:"Паника — это усиливающая петля: страх заставляет бежать, а бег разгоняет ещё больше страха. Вариант B разрывает эту петлю. Мы создаём маленькую устойчивую систему с чёткими границами и внутри неё снова управляем ситуацией.",
-    r1:"Раунд второй. Мы забаррикадировались в кабинете химии, дверь вот-вот выломают, а на столе три неизвестные жидкости. A — проверить каплю зелёной жидкости на руке зомби. B — смешать наугад красную и синюю и вылить под дверь. Голосуем!",
-    o1:"Это метод чёрного ящика. Времени изучать вирус внутри зомби нет, поэтому мы подаём сигнал на вход — одну каплю — и смотрим на выход — реакцию. Кибернетика учит управлять системой, даже когда мы не видим, что у неё внутри.",
-    r2:"Раунд третий. Мы в столовой, воздух заканчивается, а единственная вентиляция ведёт наружу — и в ней зомби-крысы. A — закрыть всё, включая шахту. B — открыть шахту, но с решёткой и дежурным. Голосуем!",
-    o2:"Это идея Берталанфи: живые системы — открытые. Система, которая отрезает себя от среды, угасает. Нас поддерживает управляемая открытость — граница с датчиком и воротами.",
-    r3:"Раунд четвёртый. Разведчики сообщают, где орда, но каждое сообщение опаздывает на десять минут. A — учесть задержку и идти туда, где орды не будет. B — убегать сразу, как пришло сообщение. Что выбираете?",
-    o3:"В каждой петле обратной связи есть задержка. Если реагировать на старую информацию как на новую, система перерегулируется, как душ: то ледяной, то кипяток. Хороший регулятор предсказывает, где система будет, а не где она была.",
-    r4:"Раунд пятый. Каждую ночь зомби возвращаются к одной и той же стене. A — поднять стену и купить больше патронов. B — найти причину, шумный генератор, и перенести его в подвал. Голосуем!",
-    o4:"Это точки воздействия Донеллы Медоуз. Менять числа — стены, патроны — самый слабый рычаг. Гораздо сильнее изменить структуру, которая создаёт проблему. А стрельба по симптому только добавляла шума — классическое «решение, которое не работает».",
-    r5:"Финальный босс — Профессор Z. Он просчитывает любую стандартную атаку. A — комбо-команда: хакер с проектором, отличница с формулами и староста со стулом. B — отправить нашего самого сильного парня со шваброй. Обычно все хотят выбрать силу. Думайте как система!",
-    o5:"Это закон необходимого разнообразия Эшби: только разнообразие может уничтожить разнообразие. Одна сильная атака проста и предсказуема. Три разных человека с тремя разными инструментами создают больше разнообразия, чем босс способен выдержать.",
-    final:"Ребята, поздравляю, мы выжили! Но самое главное: законы, которые спасли нам жизнь, — петли обратной связи, «чёрный ящик», открытые системы, задержки, точки воздействия и закон разнообразия — работают и без зомби. Они управляют экономикой, вашей карьерой, алгоритмами YouTube и даже вашими отношениями. Тот, кто видит мир как систему взаимосвязей, управляет хаосом, а не подчиняется ему. Спасибо за игру!"
+    start:"Спикер: Привет, ребята. Сегодня лекции не будет. Представьте, что десять минут назад в главном корпусе студент съел подозрительную шаурму и превратился в зомби. Эпидемия вышла из-под контроля. Вы — лидеры выживших, и от ваших решений зависит, доживёт ли наша группа до диплома. Погнали! → Нажмите «Начать выживание».",
+    r0:"Спикер: Раунд первый. Главный выход перекрыт, на нас несётся толпа в панике. A — бежать вместе с толпой к запасному выходу. B — спрятаться в ближайшей аудитории и запереть дверь. Поднимайте руки! → Нажмите V — 15 секунд на голосование, посчитайте руки и кликните выбор зала.",
+    o0:"Спикер (покажите на системный план): Паника — это усиливающая петля: страх заставляет бежать, а бег разгоняет ещё больше страха. Вариант B разрывает эту петлю. Мы создаём маленькую устойчивую систему с чёткими границами и внутри неё снова управляем ситуацией.",
+    r1:"Спикер: Раунд второй. Мы забаррикадировались в кабинете химии, дверь вот-вот выломают, а на столе три неизвестные жидкости. A — проверить каплю зелёной жидкости на руке зомби. B — смешать наугад красную и синюю и вылить под дверь. Голосуем!",
+    o1:"Спикер (покажите на системный план): Это метод чёрного ящика. Времени изучать вирус внутри зомби нет, поэтому мы подаём сигнал на вход — одну каплю — и смотрим на выход — реакцию. Кибернетика учит управлять системой, даже когда мы не видим, что у неё внутри.",
+    r2:"Спикер: Раунд третий. Мы в столовой, воздух заканчивается, а единственная вентиляция ведёт наружу — и в ней зомби-крысы. A — закрыть всё, включая шахту. B — открыть шахту, но с решёткой и дежурным. Голосуем!",
+    o2:"Спикер (покажите на системный план): Это идея Берталанфи: живые системы — открытые. Система, которая отрезает себя от среды, угасает. Нас поддерживает управляемая открытость — граница с датчиком и воротами.",
+    r3:"Спикер: Раунд четвёртый. Разведчики сообщают, где орда, но каждое сообщение опаздывает на десять минут. A — учесть задержку и идти туда, где орды не будет. B — убегать сразу, как пришло сообщение. Что выбираете?",
+    o3:"Спикер (покажите на системный план): В каждой петле обратной связи есть задержка. Если реагировать на старую информацию как на новую, система перерегулируется, как душ: то ледяной, то кипяток. Хороший регулятор предсказывает, где система будет, а не где она была.",
+    r4:"Спикер: Раунд пятый. Каждую ночь зомби возвращаются к одной и той же стене. A — поднять стену и купить больше патронов. B — найти причину, шумный генератор, и перенести его в подвал. Голосуем!",
+    o4:"Спикер (покажите на системный план): Это точки воздействия Донеллы Медоуз. Менять числа — стены, патроны — самый слабый рычаг. Гораздо сильнее изменить структуру, которая создаёт проблему. А стрельба по симптому только добавляла шума — классическое «решение, которое не работает».",
+    r5:"Спикер: Финальный босс — Профессор Z. Он просчитывает любую стандартную атаку. A — комбо-команда: хакер с проектором, отличница с формулами и староста со стулом. B — отправить нашего самого сильного парня со шваброй. Обычно все хотят выбрать силу. Думайте как система!",
+    o5:"Спикер (покажите на системный план): Это закон необходимого разнообразия Эшби: только разнообразие может уничтожить разнообразие. Одна сильная атака проста и предсказуема. Три разных человека с тремя разными инструментами создают больше разнообразия, чем босс способен выдержать.",
+    final:"Ребята, поздравляю, мы выжили! Но самое главное: законы, которые спасли нам жизнь, — петли обратной связи, «чёрный ящик», открытые системы, задержки, точки воздействия и закон разнообразия — работают и без зомби. Они управляют экономикой, вашей карьерой, алгоритмами YouTube и даже вашими отношениями. Тот, кто видит мир как систему взаимосвязей, управляет хаосом, а не подчиняется ему. Спасибо за игру!",
+    brief:"Спикер: Теперь все в этом зале — выжившие, а вы — их лидеры. Правила простые: мы описываем проблему, вы голосуете A или B, а потом мы показываем системный план — как это решают кибернетика и системное мышление. Следите за панелью сверху: здоровье, припасы, дух и угроза меняются после каждого решения. → Нажмите «Начать раунд 1».",
+    epi:"Спикер: Выход открыт, но времени хватит только на одно. A — сбежать из города вместе со всеми. B — вернуться в кабинет 214 и создать антидот, чтобы спасти человечество. Это последнее голосование — решайте!",
+    endA:"Спикер: Мы сбежали! Посмотрите, как мы это сделали: разорвали петлю паники, проверили то, что не видно изнутри, держали базу открытой, но под контролем, учли задержки, меняли структуру, а не числа, и победили босса разнообразием. Эти законы работают и без зомби — в экономике, в вашей карьере, в алгоритмах YouTube и даже в отношениях. Тот, кто видит мир как систему, управляет хаосом, а не подчиняется ему. Спасибо за игру!",
+    endB:"Спикер: Человечество спасено! Антидот — это идеальная петля обратной связи: проверка, измерение, поправка, повтор — пока система не достигнет цели. И все законы, которые привели нас сюда, работают и без зомби — в экономике, в вашей карьере, в алгоритмах YouTube и даже в отношениях. Тот, кто видит мир как систему, управляет хаосом, а не подчиняется ему. Спасибо за игру!"
   }
 }
 };
@@ -416,10 +491,20 @@ const META=[
   {correct:"a",loss:5,visual:"boss",time:"06:43"}
 ];
 const N=META.length,TOTAL=30;
+const EFFECTS=[
+  {good:{morale:10,threat:-10},bad:{health:-25,morale:-20,threat:20},item:"key"},
+  {good:{morale:10,threat:-10},bad:{health:-20,supplies:-10,threat:15},item:"sample"},
+  {good:{supplies:25,health:5},bad:{health:-20,morale:-15,supplies:-10},item:"food"},
+  {good:{threat:-15,morale:5},bad:{health:-20,morale:-15,threat:15},item:"map"},
+  {good:{threat:-20,morale:15},bad:{health:-15,supplies:-15,threat:20},item:"gen"},
+  {good:{morale:20,threat:-20},bad:{health:-20,morale:-10},item:"pass"}
+];
+const START_STATS={health:100,supplies:60,morale:60,threat:40};
 const $=s=>document.querySelector(s);
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-let S={lang:"en",screen:"start",idx:0,survivors:TOTAL,results:Array(N).fill(null),muted:false,notes:false,playing:false};
+let S={lang:"en",screen:"start",idx:0,survivors:TOTAL,results:Array(N).fill(null),applied:Array(N).fill(null),stats:{...START_STATS},items:[],ending:null,muted:false,notes:false,playing:false};
+let ambTimer=null;
 let sceneStop=null,voteTimer=null,timers=[],clockBase=14*3600+35*60,clockStart=null;
 
 /* ---------- Audio (all synthesized, no files) ---------- */
@@ -466,6 +551,9 @@ const SFX={
   whoosh(){if(!AC)return;const t=AC.currentTime;noise(t,2.2,{type:"bandpass",freq:300,freqEnd:2200,q:.8,gain:.35,attack:.4})},
   crickets(){if(!AC)return;const t=AC.currentTime;for(let i=0;i<10;i++){const tt=t+.4+i*.32;for(let j=0;j<3;j++)tone(tt+j*.045,.03,{freq:4400,gain:.04})}},
   chirp(){if(!AC)return;const t=AC.currentTime;tone(t,.12,{freq:900,freqEnd:1800,gain:.08});tone(t+.16,.12,{freq:1800,freqEnd:900,gain:.08});[659.25,880,1318.5].forEach((f,i)=>tone(t+.4+i*.12,.25,{type:"triangle",freq:f,gain:.14}))},
+  groan(){if(!AC)return;const t=AC.currentTime;const o=AC.createOscillator();o.type="sawtooth";const f0=70+Math.random()*40;o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f0*.7,t+1.8);const l=AC.createOscillator();l.frequency.value=6+Math.random()*4;const lg=AC.createGain();lg.gain.value=8;l.connect(lg).connect(o.frequency);const f=AC.createBiquadFilter();f.type="lowpass";f.frequency.value=420;const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.4);g.gain.exponentialRampToValueAtTime(.0001,t+1.9);o.connect(f).connect(g).connect(master);o.start(t);l.start(t);o.stop(t+2);l.stop(t+2)},
+  farSiren(){if(!AC)return;const t=AC.currentTime;const o=AC.createOscillator();o.type="triangle";o.frequency.setValueAtTime(600,t);o.frequency.linearRampToValueAtTime(900,t+1.2);o.frequency.linearRampToValueAtTime(600,t+2.4);const f=AC.createBiquadFilter();f.type="lowpass";f.frequency.value=1200;const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.025,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+2.6);o.connect(f).connect(g).connect(master);o.start(t);o.stop(t+2.7)},
+  bubbles(){if(!AC)return;const t=AC.currentTime;for(let i=0;i<14;i++)tone(t+i*.09+Math.random()*.05,.06,{freq:500+Math.random()*700,freqEnd:900+Math.random()*900,gain:.05})},
   scratch(){if(!AC)return;const t=AC.currentTime;for(let i=0;i<6;i++)noise(t+i*.11+Math.random()*.04,.06,{type:"bandpass",freq:2600+Math.random()*900,q:3,gain:.18})}
 };
 function startDrone(){
@@ -479,6 +567,9 @@ function startDrone(){
 function stopDrone(){
   if(!drone||!AC)return;const t=AC.currentTime;drone.g.gain.cancelScheduledValues(t);drone.g.gain.setValueAtTime(Math.max(drone.g.gain.value,.0001),t);drone.g.gain.exponentialRampToValueAtTime(.0001,t+1.5);drone.nodes.forEach(o=>o.stop(t+1.6));drone=null;
 }
+
+function startAmbient(){stopAmbient();ambTimer=setInterval(()=>{if(!AC||S.muted)return;Math.random()<.65?SFX.groan():SFX.farSiren()},7000)}
+function stopAmbient(){clearInterval(ambTimer);ambTimer=null}
 
 /* ---------- Canvas helpers ---------- */
 function animCanvas(cv,draw,update){
@@ -635,6 +726,37 @@ function finalSVG(){
   </svg>`;
 }
 
+function flask(x,y,s,liquid){
+  const P=(a,b)=>`${x+a*s} ${y+b*s}`;
+  return `<path d="M${P(-20,-110)} L${P(20,-110)} L${P(20,-60)} L${P(70,62)} Q${P(74,72)} ${P(62,72)} L${P(-62,72)} Q${P(-74,72)} ${P(-70,62)} L${P(-20,-60)} Z" fill="rgba(201,208,204,.06)" stroke="#C9D0CC" stroke-width="${3*s}"/>
+    <path d="M${P(-50,15)} L${P(50,15)} L${P(70,62)} Q${P(74,72)} ${P(62,72)} L${P(-62,72)} Q${P(-74,72)} ${P(-70,62)} Z" fill="${liquid}"/>`;
+}
+function epilogueSVG(t){
+  return `<svg class="scene" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="skyE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E5C76"/><stop offset=".6" stop-color="#E8A548"/><stop offset="1" stop-color="#F6DFA0"/></linearGradient>
+    <radialGradient id="glowE"><stop offset="0" stop-color="#46D16B" stop-opacity=".45"/><stop offset="1" stop-color="#46D16B" stop-opacity="0"/></radialGradient></defs>
+    <rect width="320" height="360" fill="url(#skyE)"/><circle cx="160" cy="236" r="40" fill="#FFF4D2"/>
+    <rect y="250" width="320" height="110" fill="#2b2a2a"/><path d="M130 250 L190 250 L300 360 L20 360 Z" fill="#4a4237"/>
+    <rect x="320" width="320" height="360" fill="#0f1a16"/><circle cx="480" cy="210" r="120" fill="url(#glowE)"/>
+    ${flask(480,210,.95,"#46D16B")}
+    <rect x="316" width="8" height="360" fill="#F2C230"/>
+    <rect x="18" y="44" width="150" height="34" fill="#0A0D10" opacity=".75"/><text x="93" y="67" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="15" fill="#F2C230">${esc(t.epi.la)}</text>
+    <rect x="338" y="44" width="170" height="34" fill="#0A0D10" opacity=".75"/><text x="423" y="67" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="15" fill="#46D16B">${esc(t.epi.lb)}</text>
+  </svg>`;
+}
+function antidoteSVG(t){
+  const w=t.loopWords;
+  return `<svg class="scene" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><radialGradient id="glowA"><stop offset="0" stop-color="#46D16B" stop-opacity=".5"/><stop offset="1" stop-color="#46D16B" stop-opacity="0"/></radialGradient></defs>
+    <rect width="640" height="360" fill="#0d1714"/><circle cx="320" cy="200" r="170" fill="url(#glowA)"/>
+    <circle class="spin" cx="320" cy="190" r="140" fill="none" stroke="#F2C230" stroke-width="3" stroke-dasharray="10 12"/>
+    <g fill="#F2C230"><path d="M-9 -7 L9 0 L-9 7 Z" transform="translate(441,120) rotate(60)"/><path d="M-9 -7 L9 0 L-9 7 Z" transform="translate(320,330) rotate(180)"/><path d="M-9 -7 L9 0 L-9 7 Z" transform="translate(199,120) rotate(300)"/></g>
+    ${flask(320,210,.85,"#46D16B")}
+    <circle class="bub" cx="305" cy="255" r="5" fill="#E6FBE9"/><circle class="bub b2" cx="330" cy="260" r="4" fill="#E6FBE9"/><circle class="bub b3" cx="318" cy="250" r="3" fill="#E6FBE9"/>
+    <g font-family="JetBrains Mono, monospace" font-weight="700" font-size="16" fill="#E6E1D6" text-anchor="middle"><text x="320" y="38">${esc(w[0])}</text><text x="500" y="300">${esc(w[1])}</text><text x="140" y="300">${esc(w[2])}</text></g>
+  </svg>`;
+}
+
 /* ---------- Screens ---------- */
 function startHTML(t){
   return `<section class="screen start">
@@ -647,6 +769,30 @@ function startHTML(t){
       <p class="story">${esc(t.story)}</p>
       <ol class="chapters">${t.rounds.map((r,i)=>`<li><b>${i+1}</b>${esc(r.title)}</li>`).join("")}</ol>
       <div class="start-row"><button class="big pulse" id="go" type="button">${esc(t.start)}</button><span class="hint">${esc(t.hint)}</span></div>
+    </div>
+  </section>`;
+}
+function briefHTML(t){
+  const b=t.brief;
+  return `<section class="screen briefing">
+    <div class="head"><p class="eyebrow">${esc(b.eyebrow)}</p><h2>${esc(b.title)}</h2></div>
+    <div class="cols">
+      <div class="left"><p class="story">${esc(b.text)}</p><p class="rules">${esc(b.rules)}</p><button class="big" id="begin" type="button">${esc(b.begin)}</button></div>
+      <div class="mission"><p class="eyebrow">${esc(b.objTitle)}</p><ol>${b.obj.map(o=>`<li>${esc(o)}</li>`).join("")}</ol></div>
+    </div>
+  </section>`;
+}
+function epiHTML(t){
+  const e=t.epi;
+  return `<section class="screen round">
+    <div class="head"><p class="eyebrow">${esc(e.eyebrow)}</p><h2>${esc(e.title)}</h2></div>
+    <div class="feed">${epilogueSVG(t)}<div class="osd"><span>${esc(e.cam)}</span><span data-clock></span></div><div class="osd bottom"><span class="rec"><i></i>REC</span><span>${esc(t.live)}</span></div></div>
+    <div class="brief"><p class="problem">${esc(e.text)}</p>
+      <div class="vote" id="vote"><button type="button" id="voteBtn">${esc(t.vote)}</button><div class="bar"><i id="voteBar"></i></div><output id="voteLeft">0:15</output></div>
+    </div>
+    <div class="choices">
+      <button class="choice" type="button" data-e="a"><span class="key">A</span><span>${esc(e.a)}</span></button>
+      <button class="choice" type="button" data-e="b"><span class="key">B</span><span>${esc(e.b)}</span></button>
     </div>
   </section>`;
 }
@@ -667,29 +813,42 @@ function roundHTML(t,i){
     </div>
   </section>`;
 }
+function deltasHTML(t,i){
+  const ok=S.results[i]===true,e=EFFECTS[i][ok?"good":"bad"];
+  const parts=Object.entries(e).map(([k,v])=>{const better=k==="threat"?v<0:v>0;return `<span class="delta ${better?"up":"down"}">${v>0?"+":"−"}${Math.abs(v)} ${esc(t.stat[k])}</span>`});
+  if(ok)parts.push(`<span class="delta item">+ ${esc(t.items[EFFECTS[i].item])}</span>`);
+  return `<div class="deltas">${parts.join("")}</div>`;
+}
+function planHTML(t,i){
+  const p=t.rounds[i].plan;
+  return `<div class="plan"><p class="eyebrow">${esc(t.planTitle)}</p><ol class="loop">${p.map((x,j)=>`<li><span>${esc(t.planLbl[j])}</span><b>${esc(x)}</b></li>`).join("")}</ol><p class="loop-note">↻ ${esc(t.planLoop)}</p></div>`;
+}
 function outcomeHTML(t,i){
   const ok=S.results[i]===true,r=t.rounds[i],o=ok?r.good:r.bad,loss=ok?0:META[i].loss;
   return `<section class="screen outcome ${ok?"good":"bad"}">
     <p class="eyebrow">${esc(r.label)} · ${esc(r.title)}</p>
     <div class="verdict"><span class="stamp">${esc(ok?t.stampGood:t.stampBad)}</span><span class="loss">${esc(loss?t.loss(loss):t.noLoss)}</span></div>
+    ${deltasHTML(t,i)}
     <h2>${esc(o.title)}</h2>
     <p class="story-text">${esc(o.text)}</p>
-    <div class="debrief"><div class="tape thin" aria-hidden="true"></div><p class="eyebrow">${esc(t.debrief)}</p><h3>${esc(o.concept)}</h3><p>${esc(o.expl)}</p></div>
+    <div class="lessons">${planHTML(t,i)}<div class="debrief"><div class="tape thin" aria-hidden="true"></div><p class="eyebrow">${esc(t.debrief)}</p><h3>${esc(o.concept)}</h3><p>${esc(o.expl)}</p></div></div>
     <div class="actions">${ok?"":`<button class="ghost" id="rewind" type="button">${esc(t.rewind)}</button>`}<button class="big" id="next" type="button">${esc(i<N-1?t.next:t.toFinal)}</button></div>
   </section>`;
 }
 function verdictIdx(score){return score===N?3:score===N-1?2:score>=3?1:0}
 function finalHTML(t){
-  const score=S.results.filter(x=>x===true).length;
+  const score=S.results.filter(x=>x===true).length,end=S.ending||"escape",E=t.endings[end];
+  const text=end==="antidote"?(S.results[1]?E.textSample:E.textNoSample):E.text;
   return `<section class="screen final">
-    <div class="feed">${finalSVG()}<div class="osd"><span>${esc(t.camFinal)}</span><span data-clock></span></div></div>
-    <div class="final-text"><p class="eyebrow">${esc(t.finalEyebrow)}</p><h2 class="title">${esc(t.finalTitle)}</h2><p class="cheat">${esc(t.cheat)}</p><p class="verdict-line">${esc(t.verdicts[verdictIdx(score)])}</p></div>
+    <div class="feed">${end==="antidote"?antidoteSVG(t):finalSVG()}<div class="osd"><span>${esc(end==="antidote"?t.camLab:t.camFinal)}</span><span data-clock></span></div></div>
+    <div class="final-text"><p class="eyebrow">${esc(E.eyebrow)}</p><h2 class="title">${esc(E.title)}</h2><p class="verdict-line">${esc(text)}</p><p class="cheat">${esc(t.cheat)}</p></div>
+    <div class="debrief"><div class="tape thin" aria-hidden="true"></div><p class="eyebrow">${esc(t.debrief)}</p><h3>${esc(E.concept)}</h3><p>${esc(E.expl)}</p></div>
     <div class="scoreboard">
       <div class="score"><span>${esc(t.survLbl)}</span><b>${S.survivors}/${TOTAL}</b></div>
       <div class="score"><span>${esc(t.callsLbl)}</span><b>${score}/${N}</b></div>
       ${t.laws.map((l,i)=>`<div class="score"><span>${esc(l)}</span><b class="${S.results[i]?"ok":"no"}">${S.results[i]?"✓":"✕"}</b></div>`).join("")}
     </div>
-    <div class="actions"><button class="ghost" id="again" type="button">${esc(t.again)}</button></div>
+    <div class="actions"><p class="verdict-line">${esc(t.verdicts[verdictIdx(score)])}</p><button class="ghost" id="again" type="button">${esc(t.again)}</button></div>
   </section>`;
 }
 
@@ -699,7 +858,7 @@ function cleanup(){if(sceneStop){sceneStop();sceneStop=null}timers.forEach(clear
 function render(opts={}){
   cleanup();const t=T[S.lang];updateHud();
   const st=$("#stage");
-  st.innerHTML=S.screen==="start"?startHTML(t):S.screen==="round"?roundHTML(t,S.idx):S.screen==="outcome"?outcomeHTML(t,S.idx):finalHTML(t);
+  st.innerHTML=({start:startHTML,brief:briefHTML,round:x=>roundHTML(x,S.idx),outcome:x=>outcomeHTML(x,S.idx),epi:epiHTML,final:finalHTML})[S.screen](t);
   st.scrollTop=0;
   if(opts.glitch&&!reduced){st.classList.remove("glitch");void st.offsetWidth;st.classList.add("glitch")}
   bind();updateNotes();tickClock();
@@ -708,7 +867,9 @@ function render(opts={}){
 function bind(){
   const st=$("#stage"),t=T[S.lang];
   st.querySelector("#go")?.addEventListener("click",startGame);
-  st.querySelectorAll(".choice").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.c)));
+  st.querySelectorAll(".choice[data-c]").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.c)));
+  st.querySelectorAll(".choice[data-e]").forEach(b=>b.addEventListener("click",()=>chooseEnding(b.dataset.e)));
+  st.querySelector("#begin")?.addEventListener("click",()=>goRound(0));
   st.querySelector("#voteBtn")?.addEventListener("click",startVote);
   st.querySelector("#next")?.addEventListener("click",next);
   st.querySelector("#rewind")?.addEventListener("click",rewind);
@@ -727,12 +888,15 @@ function outcomeSfx(i,ok){
   if(ok){({corridor:SFX.slam,lab:SFX.hiss,canteen:SFX.whoosh,radio:SFX.chirp,night:SFX.crickets,boss:SFX.fanfare})[v]();return}
   ({corridor:()=>{SFX.crowd();setTimeout(SFX.fail,900);shake()},lab:()=>{SFX.explosion();flash();shake()},canteen:()=>{SFX.heartbeat();setTimeout(SFX.heartbeat,900);setTimeout(SFX.fail,1700)},radio:()=>{SFX.radio();SFX.crowd();setTimeout(SFX.fail,1100);shake()},night:()=>{SFX.growl();SFX.thud();shake()},boss:()=>{SFX.thud();SFX.growl();shake()}})[v]();
 }
-function goRound(i,opts={}){S.screen="round";S.idx=i;setClock(META[i].time);render({glitch:true,focus:true});enterSfx(i)}
-function startGame(){audio();SFX.glitch();startDrone();S.playing=true;S.survivors=TOTAL;S.results=Array(N).fill(null);goRound(0)}
-function jumpTo(i){audio();startDrone();S.playing=true;if(S.results[i]===false)S.survivors+=META[i].loss;S.results[i]=null;goRound(i)}
+function applyEffects(i,ok){const e=EFFECTS[i][ok?"good":"bad"],diff={};for(const[k,v]of Object.entries(e)){const nv=Math.max(k==="health"?5:0,Math.min(100,S.stats[k]+v));diff[k]=nv-S.stats[k];S.stats[k]=nv}const item=ok?EFFECTS[i].item:null;if(item&&!S.items.includes(item))S.items.push(item);S.applied[i]={diff,item}}
+function revertEffects(i){const a=S.applied[i];if(!a)return;for(const[k,v]of Object.entries(a.diff))S.stats[k]-=v;if(a.item)S.items=S.items.filter(x=>x!==a.item);S.applied[i]=null}
+function resetRun(){S.survivors=TOTAL;S.results=Array(N).fill(null);S.applied=Array(N).fill(null);S.stats={...START_STATS};S.items=[];S.ending=null}
+function goRound(i){S.screen="round";S.idx=i;setClock(META[i].time);render({glitch:true,focus:true});enterSfx(i)}
+function startGame(){audio();SFX.glitch();SFX.siren();startDrone();startAmbient();S.playing=true;resetRun();S.screen="brief";setClock("14:35");render({glitch:true,focus:true})}
+function jumpTo(i){audio();startDrone();startAmbient();S.playing=true;for(let j=N-1;j>=i;j--){if(S.results[j]===false)S.survivors+=META[j].loss;revertEffects(j);S.results[j]=null}S.ending=null;goRound(i)}
 function choose(c){
   if(S.screen!=="round")return;SFX.blip();
-  const i=S.idx,ok=c===META[i].correct;S.results[i]=ok;if(!ok)S.survivors-=META[i].loss;
+  const i=S.idx,ok=c===META[i].correct;S.results[i]=ok;if(!ok)S.survivors-=META[i].loss;applyEffects(i,ok);
   S.screen="outcome";render({glitch:true,focus:true});
   if(!ok){const b=$("#surv");b.classList.remove("hit");void b.offsetWidth;b.classList.add("hit")}
   outcomeSfx(i,ok);
@@ -740,15 +904,21 @@ function choose(c){
 function next(){
   if(S.screen!=="outcome")return;
   if(S.idx<N-1)goRound(S.idx+1);
-  else{S.screen="final";stopDrone();setClock("07:05");render({glitch:true,focus:true});SFX.applause();setTimeout(SFX.fanfare,500)}
+  else{S.screen="epi";setClock("07:00");render({glitch:true,focus:true});SFX.farSiren()}
+}
+function chooseEnding(c){
+  if(S.screen!=="epi")return;stopVote();SFX.blip();
+  S.ending=c==="a"?"escape":"antidote";S.screen="final";stopDrone();stopAmbient();
+  setClock(S.ending==="escape"?"07:05":"18:40");render({glitch:true,focus:true});
+  if(S.ending==="escape"){SFX.applause();setTimeout(SFX.fanfare,500)}else{SFX.bubbles();setTimeout(SFX.fanfare,700);setTimeout(SFX.applause,1500)}
 }
 function rewind(){
   if(S.screen!=="outcome"||S.results[S.idx]!==false)return;
-  S.survivors+=META[S.idx].loss;S.results[S.idx]=null;SFX.rewind();goRound(S.idx);
+  S.survivors+=META[S.idx].loss;revertEffects(S.idx);S.results[S.idx]=null;SFX.rewind();goRound(S.idx);
 }
-function again(){stopDrone();S.playing=false;clockStart=null;clockBase=14*3600+35*60;S.screen="start";S.idx=0;S.survivors=TOTAL;S.results=Array(N).fill(null);render({glitch:true,focus:true})}
+function again(){stopDrone();stopAmbient();S.playing=false;clockStart=null;clockBase=14*3600+35*60;resetRun();S.screen="start";S.idx=0;render({glitch:true,focus:true})}
 function startVote(){
-  if(S.screen!=="round")return;stopVote();audio();
+  if(S.screen!=="round"&&S.screen!=="epi")return;stopVote();audio();
   let left=15;const bar=$("#voteBar"),out=$("#voteLeft"),box=$("#vote");
   const tick=()=>{if(!bar||!document.body.contains(bar)){stopVote();return}
     bar.style.width=(left/15*100)+"%";out.textContent="0:"+String(left).padStart(2,"0");box.classList.toggle("urgent",left<=5);
@@ -767,9 +937,14 @@ function updateHud(){
   $("#meter").querySelectorAll("span").forEach((c,i)=>{c.className=S.results[i]===true?"on":S.results[i]===false?"off":""});
   $("#btnLang").textContent=t.langBtn;$("#btnSound").textContent=S.muted?t.soundOff:t.sound;$("#btnSound").setAttribute("aria-pressed",String(!S.muted));
   $("#btnNotes").textContent=t.notes;$("#btnNotes").setAttribute("aria-pressed",String(S.notes));$("#btnFull").textContent=t.full;
+  renderStatus();
+}
+function renderStatus(){
+  const t=T[S.lang],st=$("#status");st.hidden=S.screen==="start";
+  st.innerHTML=`<div class="bars">${["health","supplies","morale","threat"].map(k=>{const v=S.stats[k];return `<div class="bar-item ${k}${k!=="threat"&&v<35?" low":""}"><span>${esc(t.stat[k])}</span><div class="track"><i style="width:${v}%"></i></div><b>${v}</b></div>`}).join("")}</div><div class="inv"><span>${esc(t.inv)}</span>${S.items.length?S.items.map(it=>`<span class="chip">${esc(t.items[it])}</span>`).join(""):`<span class="none">—</span>`}</div>`;
 }
 function updateNotes(){
-  const t=T[S.lang];const key=S.screen==="start"?"start":S.screen==="round"?"r"+S.idx:S.screen==="outcome"?"o"+S.idx:"final";
+  const t=T[S.lang];const key=S.screen==="start"?"start":S.screen==="brief"?"brief":S.screen==="round"?"r"+S.idx:S.screen==="outcome"?"o"+S.idx:S.screen==="epi"?"epi":(S.ending==="antidote"?"endB":"endA");
   $("#notesTitle").textContent=t.notesTitle;$("#notesText").textContent=t.notesText[key];$("#notes").hidden=!S.notes;
 }
 function toggleNotes(){S.notes=!S.notes;updateHud();updateNotes()}
@@ -783,7 +958,7 @@ $("#btnFull").addEventListener("click",toggleFull);
 addEventListener("keydown",e=>{
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   const c=e.code;
-  if((c==="KeyA"||c==="KeyB")&&S.screen==="round"){e.preventDefault();choose(c==="KeyA"?"a":"b")}
+  if((c==="KeyA"||c==="KeyB")&&(S.screen==="round"||S.screen==="epi")){e.preventDefault();const v=c==="KeyA"?"a":"b";S.screen==="round"?choose(v):chooseEnding(v)}
   else if(/^Digit[1-6]$/.test(c)){jumpTo(Number(c.slice(5))-1)}
   else if(c==="KeyV"){startVote()}
   else if(c==="KeyN"){toggleNotes()}
@@ -792,7 +967,7 @@ addEventListener("keydown",e=>{
   else if(c==="KeyL"){toggleLang()}
   else if(c==="KeyR"&&S.screen==="outcome"){rewind()}
   else if(c==="ArrowRight"||((c==="Enter"||c==="Space")&&!(document.activeElement&&document.activeElement.tagName==="BUTTON"))){
-    if(S.screen==="start"){e.preventDefault();startGame()}else if(S.screen==="outcome"){e.preventDefault();next()}
+    if(S.screen==="start"){e.preventDefault();startGame()}else if(S.screen==="brief"){e.preventDefault();goRound(0)}else if(S.screen==="outcome"){e.preventDefault();next()}
   }
 });
 
@@ -806,12 +981,11 @@ setInterval(tickClock,1000);
 
 /* ---------- Boot ---------- */
 function boot(data){
-  if(data&&data.S&&Array.isArray(data.S.results)&&data.S.results.length===N){S=Object.assign(S,data.S,{notes:false});if(data.clockBase!=null){clockBase=data.clockBase;clockStart=data.clockStart}}
+  if(data&&data.S&&data.S.stats&&Array.isArray(data.S.results)&&data.S.results.length===N){S=Object.assign(S,data.S,{notes:false});if(data.clockBase!=null){clockBase=data.clockBase;clockStart=data.clockStart}}
   render({});
 }
 window.claude?.hot?.snapshot?.(()=>({S,clockBase,clockStart}));
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 </script>
-
 </body>
 </html>
