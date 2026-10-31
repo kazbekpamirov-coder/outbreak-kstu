@@ -1,6 +1,6 @@
-# Outbreak at KSTU
+# Outbreak at KSTU · CYBER Z
 
-A zombie survival game about cybernetics and system thinking, made for the presentation
+A zombie survival game about cybernetics and system thinking, made by team **CYBER Z** for the presentation
 “Cybernetics and System Thinking” by Kazbek Pamirov (KSTU named after I. Razzakov, group BIS-1-26).
 
 **Play:** https://kazbekpamirov-coder.github.io/outbreak-kstu/
@@ -19,6 +19,8 @@ After every vote the outcome screen shows what changed on the survival panel (he
 inventory) and **our system plan** — sensor, goal, action, feedback — for the speakers to explain.
 The epilogue is a last vote with two endings: **escape the city** or **go back to the lab and make the antidote**.
 Zombie groans and distant sirens play quietly in the background.
+
+The site opens with the CYBER Z intro (tap to skip); click the emblem on the start screen to replay it with sound.
 
 Keys for the presenter: Enter start / continue · A / B choose · V 15-second vote · N speaker notes · M sound · F full screen · 1–6 jump to a round.
 The page is a single self-contained `index.html`; all sounds are generated in the browser.
